@@ -1,4 +1,5 @@
-from distutils.core import setup
+# -*- coding: utf-8 -*-
+from setuptools import setup
 
 setup(
     name='django-logentry-admin',
@@ -13,6 +14,7 @@ setup(
     install_requires=[
         'Django >= 1.3',
     ],
+    include_package_data=True,
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Framework :: Django',
