@@ -4,7 +4,21 @@ from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import SimpleListFilter
 
+class ActionListFilter(SimpleListFilter):
+    title = _('action')
+    parameter_name = 'action_flag'
+
+    def lookups(self, request, model_admin):
+        return (
+            (ADDITION, _('addition')),
+            (DELETION, _('deletion')),
+            (CHANGE, _('change')),
+        )
+
+    def queryset(self, request, queryset):
+        return queryset.filter(action_flag=self.value()) if self.value() else queryset
 
 class LogEntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'action_time'
@@ -14,7 +28,7 @@ class LogEntryAdmin(admin.ModelAdmin):
 
     list_filter = [
         'content_type',
-        'action_flag'
+        ActionListFilter
     ]
 
     search_fields = [
