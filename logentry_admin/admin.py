@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.utils.html import escape
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import SimpleListFilter
 
@@ -61,12 +61,12 @@ class LogEntryAdmin(admin.ModelAdmin):
             link = escape(obj.object_repr)
         else:
             ct = obj.content_type
-            link = '<a href="%s">%s</a>' % (
-                reverse('admin:%s_%s_change' % (ct.app_label, ct.model),
-                        args=[obj.object_id]),
-                escape(obj.object_repr),
-            )
-        return link
+            try:
+                url = reverse('admin:%s_%s_change' % (ct.app_label, ct.model), args=[obj.object_id])
+                link = '<a href="%s">%s</a>' % (url, escape(obj.object_repr))
+                return link
+            except NoReverseMatch:
+                return None
     object_link.allow_tags = True
     object_link.admin_order_field = 'object_repr'
     object_link.short_description = _('object')
